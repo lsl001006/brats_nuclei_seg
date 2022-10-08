@@ -1,0 +1,61 @@
+{
+    "name": "brats_eccv_exp82_2_test",
+    "n_gpu": 1,
+
+    "arch": {
+        "type": "UNet",
+        "args": {
+            "in_c": 3,
+            "out_c": 2
+        }
+    },
+    "train_data_loader": {
+        "type": "BraTSSegDataLoader",
+        "args": {
+            "h5_filepath": "/share_hd1/db/Nuclei/lifelong/syn_images_v3/Brain_lifelong/Brain_lifelong_noDropout_brats_epoch80_task2_brats.h5",
+            "batch_size": 16,
+            "shuffle": true,
+            "validation_split": 0,
+            "num_workers": 0,
+            "training": true,
+            "img_size": 224
+        }
+    },
+    "test_data_loader": {
+        "type": "BraTSSegDataLoader",
+        "args": {
+            "h5_filepath": "/share_hd1/db/Brain/real_images/test_brats.h5",
+            "batch_size": 32,
+            "shuffle": false,
+            "validation_split": 0,
+            "num_workers": 0,
+            "training": false,
+            "img_size": 240
+        }
+    },
+    "optimizer": {
+        "type": "Adam",
+        "args":{
+            "lr": 0.0001,
+            "weight_decay": 0.0001,
+            "amsgrad": true
+        }
+    },
+    "loss": "bce_and_dice_loss",
+    "metrics": [
+        "accuracy", "dice", "sensitivity", "specificity"
+    ],
+    "test_metrics": [
+        "accuracy", "dice", "sensitivity", "specificity", "hausdorff95"
+    ],
+
+    "trainer": {
+        "epochs": 100,
+        "save_dir": "./experiments/lifelong_eccv/test",
+        "save_period": 1,
+        "verbosity": 2,
+        "monitor": "max val_dice",
+        "early_stop": 100,
+        "tensorboard": true
+    }
+}

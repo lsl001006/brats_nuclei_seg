@@ -1,0 +1,2 @@
+CUDA_VISIBLE_DEVICES=1 python test_seg.py -c config_files/config_seg_all_HGG_LGG.json -d 0 \
+-r /home/csgrad/xuangong/dffed/brats_nuclei_seg/experiments/seg/real_imgs_unet/models/HGG_LGG_All_seg_test/1008_042127/model_best.pth

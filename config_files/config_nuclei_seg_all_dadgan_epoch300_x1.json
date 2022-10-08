@@ -1,0 +1,61 @@
+{
+    "name": "dadgan_epoch300_test2",
+    "n_gpu": 1,
+
+    "arch": {
+        "type": "UNet",
+        "args": {
+            "in_c": 3,
+            "out_c": 3
+        }
+    },
+    "train_data_loader": {
+        "type": "NucleiSegDataLoader",
+        "args": {
+            "h5_filepath": "/share_hd1/db/Nuclei/for_seg_256/Nuclei_resnet_dadgan_epoch300.h5",
+            "batch_size": 16,
+            "shuffle": true,
+            "validation_split": 0,
+            "num_workers": 0,
+            "training": true,
+            "img_size": 224
+        }
+    },
+    "test_data_loader": {
+        "type": "NucleiSegDataLoader",
+        "args": {
+            "h5_filepath": "/share_hd1/db/Nuclei/for_seg_256/test2.h5",
+            "batch_size": 16,
+            "shuffle": false,
+            "validation_split": 0,
+            "num_workers": 0,
+            "training": false,
+            "img_size": 224
+        }
+    },
+    "optimizer": {
+        "type": "Adam",
+        "args":{
+            "lr": 0.001,
+            "weight_decay": 0.0001,
+            "amsgrad": true
+        }
+    },
+    "loss": "nll_loss",
+    "metrics": [
+        "accuracy", "dice"
+    ],
+    "test_metrics": [
+        "accuracy", "dice", "aji"
+    ],
+
+    "trainer": {
+        "epochs": 100,
+        "save_dir": "./experiments/nuclei_seg/fake_imgs_unet",
+        "save_period": 1,
+        "verbosity": 2,
+        "monitor": "max val_aji",
+        "early_stop": 200,
+        "tensorboard": true
+    }
+}

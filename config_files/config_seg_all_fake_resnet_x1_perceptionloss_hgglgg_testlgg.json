@@ -1,0 +1,61 @@
+{
+    "name": "All_fake_multilabel_perceptionloss_hgglgg_epoch150_testlgg",
+    "n_gpu": 1,
+
+    "arch": {
+        "type": "UNet",
+        "args": {
+            "in_c": 3,
+            "out_c": 1
+        }
+    },
+    "train_data_loader": {
+        "type": "BraTSSegDataLoader",
+        "args": {
+            "h5_filepath": "/share_hd1/db/BRATS/brats18_for_seg/BraTS18_whole_syn/brats_multilabel_perceptionloss_hddlgg_epoch150.h5",
+            "batch_size": 16,
+            "shuffle": true,
+            "validation_split": 0,
+            "num_workers": 0,
+            "training": true,
+            "img_size": 224
+        }
+    },
+    "test_data_loader": {
+        "type": "BraTSSegDataLoader",
+        "args": {
+            "h5_filepath": "/share_hd1/db/BRATS/brats18_for_seg/LGG/BraTS18_LGG_all/test.h5",
+            "batch_size": 32,
+            "shuffle": false,
+            "validation_split": 0,
+            "num_workers": 0,
+            "training": false,
+            "img_size": 240
+        }
+    },
+    "optimizer": {
+        "type": "Adam",
+        "args":{
+            "lr": 0.001,
+            "weight_decay": 0.0001,
+            "amsgrad": true
+        }
+    },
+    "loss": "bce_and_dice_loss",
+    "metrics": [
+        "accuracy", "dice", "sensitivity", "specificity"
+    ],
+    "test_metrics": [
+        "accuracy", "dice", "sensitivity", "specificity"
+    ],
+
+    "trainer": {
+        "epochs": 50,
+        "save_dir": "./experiments/seg/fake_imgs_unet",
+        "save_period": 1,
+        "verbosity": 2,
+        "monitor": "max val_dice",
+        "early_stop": 100,
+        "tensorboard": true
+    }
+}
