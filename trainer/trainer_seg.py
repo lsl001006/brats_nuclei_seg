@@ -50,8 +50,9 @@ class SegTrainer(BaseTrainer):
         self.train_metrics.reset()
         for batch_idx, (data, target, img_name) in enumerate(self.data_loader):
             data, target = data.to(self.device), target.to(self.device)
+            
             if target.max() == 255:
-                target /= 255
+                target = target / 255
             # from utils.util import show_figures
             # for i in range(data.size(0)):
             #     show_figures((data[i][0].cpu().numpy(), target[i][0].cpu().numpy()))
@@ -60,7 +61,9 @@ class SegTrainer(BaseTrainer):
 
             self.optimizer.zero_grad()
             output = self.model(data)
+            
             loss = self.criterion(torch.sigmoid(output), target.float())
+            
             loss.backward()
             self.optimizer.opt.step()
 

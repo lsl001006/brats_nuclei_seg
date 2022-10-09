@@ -207,7 +207,7 @@ def prepare_seg_data_from_syn_h5(h5_file_path, save_path):
     result_file.close()
     h5_file.close()
 
-# split_patches('/share_hd1/db/Nuclei/original/original_images', '/share_hd1/db/Nuclei/original/patches_256/original_images')
+#  ('/share_hd1/db/Nuclei/original/original_images', '/share_hd1/db/Nuclei/original/patches_256/original_images')
 # split_patches('/share_hd1/db/Nuclei/original/labels', '/share_hd1/db/Nuclei/original/patches_286/labels')
 # split_patches('/share_hd1/db/Nuclei/original/labels_ternary', '/share_hd1/db/Nuclei/original/patches_286/labels_ternary', post_fix='label')
 # split_patches('/share_hd1/db/Nuclei/original/weight_maps', '/share_hd1/db/Nuclei/original/patches_286/weight_maps', post_fix='weight')

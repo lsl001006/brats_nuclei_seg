@@ -1,6 +1,6 @@
 {
-    "name": "LGG_tumor_size_7_seg_train",
-    "n_gpu": 1,
+    "name": "real_sub7",
+    "n_gpu": 2,
 
     "arch": {
         "type": "UNet",
@@ -12,7 +12,7 @@
     "train_data_loader": {
         "type": "BraTSSegDataLoader",
         "args": {
-            "h5_filepath": "/share_hd1/db/BRATS/brats18_for_seg/LGG/LGG_tumor_size_split_10/BraTS18_LGG_tumor_size_7/train.h5",
+            "h5_filepath": "/a2il/data/xuangong/BRATS/2018_seg/HGG_tumor_size_split_10/BraTS18_tumor_size_7/train.h5",
             "batch_size": 16,
             "shuffle": true,
             "validation_split": 0,
@@ -24,7 +24,7 @@
     "test_data_loader": {
         "type": "BraTSSegDataLoader",
         "args": {
-            "h5_filepath": "/share_hd1/db/BRATS/brats18_for_seg/LGG/BraTS18_LGG_all/test.h5",
+            "h5_filepath": "/a2il/data/xuangong/BRATS/2018_seg/BraTS18_HGG_all/test.h5",
             "batch_size": 32,
             "shuffle": false,
             "validation_split": 0,
@@ -46,12 +46,12 @@
         "accuracy", "dice", "sensitivity", "specificity"
     ],
     "test_metrics": [
-        "accuracy", "dice", "sensitivity", "specificity"
+        "accuracy", "dice", "sensitivity", "specificity", "hausdorff95"
     ],
 
     "trainer": {
         "epochs": 50,
-        "save_dir": "./experiments/seg/real_imgs_unet",
+        "save_dir": "./experiments/rep/real_sub7",
         "save_period": 1,
         "verbosity": 2,
         "monitor": "max val_dice",

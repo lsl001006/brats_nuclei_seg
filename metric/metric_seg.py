@@ -63,17 +63,24 @@ def specificity(output, target):
 def hausdorff95(output, target):
     with torch.no_grad():
         # pred = torch.sigmoid(output) > 0.5
+        
         pred = output > 0.5
+        target = target > 0.5
         assert pred.size() == target.size()
-
+        
         pred = pred.detach().cpu().numpy()
         target = target.detach().cpu().numpy()
+        
+        
+        
         hd95 = 0.0
         n = 0
         for k in range(pred.shape[0]):
             if np.count_nonzero(pred[k]) > 0:  # need to handle blank prediction
                 n += 1
                 pred_contours = pred[k] & (~morphology.binary_erosion(pred[k]))
+                # print(type(target[k]))
+                # import pdb;pdb.set_trace()
                 target_contours = target[k] & (~morphology.binary_erosion(target[k]))
                 pred_ind = np.argwhere(pred_contours)
                 target_ind = np.argwhere(target_contours)

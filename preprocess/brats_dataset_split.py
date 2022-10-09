@@ -50,6 +50,7 @@ def partition(orig_file_path, save_path, save_prefix, num_partition, method_part
         print(size_dict)
         counter = 0
         for key, _ in size_dict:
+            print(f'{counter} / {len(size_dict)} : [{key}]')
             orig_file.copy('/train/{:s}'.format(key), result_files[counter // chunk_size]['/train'])
             counter += 1
 
@@ -133,6 +134,12 @@ def save_h5_file_for_seg(data_path, save_path):
 
 
 def _save_h5_with_tumor(dataset, save_filepath):
+    """save the h5 data with tumor
+
+    Args:
+        dataset (_type_): h5 data
+        save_filepath (_type_): path to save the new h5 data with tumor
+    """
     h5_file = h5py.File(save_filepath, 'w')
     h5_file.create_group('images')
     h5_file.create_group('labels')
@@ -147,13 +154,15 @@ def _save_h5_with_tumor(dataset, save_filepath):
             if np.count_nonzero(slice_label) < 10:
                 continue
 
+            # normalize dcm image
             slice_dcm = dcm[:, :, i]
-            # print('{:f}\t{:f}'.format(slice_dcm.min(), slice_dcm.max()))
             slice_dcm = slice_dcm * ((pow(2, 8) - 1) / slice_dcm.max())
             slice_dcm = slice_dcm.astype("uint8")
             slice_dcm = slice_dcm[:, :, None].repeat(3, axis=2)
+            # import pdb;pdb.set_trace()
+            
             slice_label = slice_label.astype("uint8")
-            # slice_label[slice_label > 0] = 255
+            slice_label[slice_label > 0] = 255
 
             h5_file.create_dataset('/images/{:s}_{:d}'.format(key, i), data=slice_dcm)
             h5_file.create_dataset('/labels/{:s}_{:d}'.format(key, i), data=slice_label)
@@ -214,31 +223,61 @@ def test():
 def main(cmd):
     if cmd == 'p_h':
         # partition for HGG data
-        partition("/home/lsl/Research/code_seg_cvpr/datasets/brats18/BraTS18.h5",
-                "/home/lsl/Research/code_seg_cvpr/datasets/brats18/tumor_size_split_10", 
+        print("HGG partition")
+        partition("/a2il/data/xuangong/BRATS/2018/BraTS18.h5",
+                "/a2il/data/xuangong/BRATS/HGG_tumor_size_split_10", 
                 "BraTS18", 
                 num_partition=10,
                 method_partition='tumor_size')
     if cmd == 'p_l':
         # partition for LGG data
-        partition("/home/lsl/Research/code_seg_cvpr/datasets/brats18/BraTS18_LGG.h5",
-                "/home/lsl/Research/code_seg_cvpr/datasets/brats18/LGG_tumor_size_split_10", 
+        print("LGG partition")
+        partition("/a2il/data/xuangong/BRATS/2018/BraTS18_LGG.h5",
+                "/a2il/data/xuangong/BRATS/LGG_tumor_size_split_10", 
                 "BraTS18", 
                 num_partition=10,
                 method_partition='tumor_size')
-    if cmd == 's':
+    if cmd == 's_h':
+        print("HGG save h5")
         for i in tqdm(range(10)):
-            save_h5_file_for_seg(f"/home/lsl/Research/code_seg_cvpr/datasets/brats18/tumor_size_split_10/BraTS18_tumor_size_{i}.h5",
-                                 f"/home/lsl/Research/code_seg_cvpr/datasets/brats18_seg/tumor_size_split_10/BraTS18_tumor_size_{i}")
-    if cmd == 'combine':
-        combine_data_set("/a2il/data/xuangong/BRATS/2018/BraTS18.h5", 
-                         "/a2il/data/xuangong/BRATS/2018/BraTS18_LGG.h5",
-                         "/a2il/data/xuangong/BRATS/2018/BraTS18_HGG_LGG.h5")
-        save_h5_file_for_seg("/a2il/data/xuangong/BRATS/2018/BraTS18_HGG_LGG.h5", 
-                             "/a2il/data/xuangong/BRATS/2018_seg/BraTS18_RealAll_HGG_LGG")
+            save_h5_file_for_seg(f"/a2il/data/xuangong/BRATS/HGG_tumor_size_split_10/BraTS18_tumor_size_{i}.h5",
+                                 f"/a2il/data/xuangong/BRATS/2018_seg/HGG_tumor_size_split_10/BraTS18_tumor_size_{i}")
+    if cmd == 's_l':
+        print("LGG save h5")
+        for i in tqdm(range(10)):
+            save_h5_file_for_seg(f"/a2il/data/xuangong/BRATS/LGG_tumor_size_split_10/BraTS18_tumor_size_{i}.h5",
+                                 f"/a2il/data/xuangong/BRATS/2018_seg/LGG_tumor_size_split_10/BraTS18_tumor_size_{i}")
+    # if cmd == 'combine':
+    #     combine_data_set("/a2il/data/xuangong/BRATS/2018/BraTS18.h5", 
+    #                      "/a2il/data/xuangong/BRATS/2018/BraTS18_LGG.h5",
+    #                      "/a2il/data/xuangong/BRATS/2018/BraTS18_HGG_LGG.h5")
+    #     save_h5_file_for_seg("/a2il/data/xuangong/BRATS/2018/BraTS18_HGG_LGG.h5", 
+    #                          "/a2il/data/xuangong/BRATS/2018_seg/BraTS18_RealAll_HGG_LGG")
+    if cmd == 's_all_h':
+        print("save all hgg h5 file for training seg")
+        save_h5_file_for_seg(data_path="/a2il/data/xuangong/BRATS/2018/BraTS18.h5",
+                             save_path="/a2il/data/xuangong/BRATS/2018_seg/BraTS18_HGG_all")
+    if cmd == 's_all_l':
+        print("save all hgg h5 file for testing seg")
+        save_h5_file_for_seg(data_path="/a2il/data/xuangong/BRATS/2018/BraTS18_LGG.h5",
+                             save_path="/a2il/data/xuangong/BRATS/2018_seg/BraTS18_LGG_all")
 
 if __name__ == '__main__':
-    main(cmd='combine')
+    # HGG数据分成10份，并合成10份train.h5放入
+    # 2018_seg/HGG_tumor_size_split_10/BraTS18_tumor_size_{i}下
+    # main(cmd='p_h')
+    main(cmd='s_h')
+    # LGG数据分成10份，并合成10份train.h5放入
+    # 2018_seg/LGG_tumor_size_split_10/BraTS18_tumor_size_{i}下
+    main(cmd='p_l')
+    main(cmd='s_l')
+    # All HGG data 合成一份real_all training dataset
+    main(cmd='s_all_h')
+    # All LGG data 合成一份real_all testing dataset
+    main(cmd='s_all_l')
+    
+    # save_h5_file_for_seg("/a2il/data/xuangong/BRATS/2018/BraTS18.h5",
+    #                     "/a2il/data/xuangong/BRATS/2018_seg/BraTS18_HGG/")
 
 # save_png_for_seg("/home/lsl/Research/code_seg_cvpr/datasets/brats18/tumor_size_split_10/BraTS18_tumor_size_0.h5", 
 #                 "/home/lsl/Research/code_seg_cvpr/datasets/brats18/tumor_size_pngs")

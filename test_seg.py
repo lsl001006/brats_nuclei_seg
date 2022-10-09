@@ -60,10 +60,8 @@ def main(config):
         for i, (data, target, img_names) in enumerate(tqdm(data_loader)):
             data, target = data.to(device), target.to(device)
             output = model(data)
-            # print(data.unique())
-            # print(target.unique())
             if target.max() == 255:
-                target = target / 255.0
+                target = target / 255
                 # target /= 255
 
             # computing loss, metrics on test set
@@ -73,6 +71,7 @@ def main(config):
 
             for k, metric in enumerate(metric_fns):
                 total_metrics[k] += metric(output, target) * batch_size
+            
 
             if hausdorff_flag:
                 hd95_val, n = hausdorff95(output, target)

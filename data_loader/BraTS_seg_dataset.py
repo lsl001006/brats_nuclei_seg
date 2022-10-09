@@ -10,6 +10,7 @@ def get_imgs_list(h5_filepath):
     img_list = []
 
     with h5py.File(h5_filepath, 'r') as h5_file:
+        print(h5_filepath)
         img_filenames = list(h5_file['images'].keys())
         label_filenames = list(h5_file['labels'].keys())
 
@@ -40,8 +41,10 @@ class BraTSSegDataset(data.Dataset):
                 label = (label * 255).astype(np.uint8)
             img = Image.fromarray(img, 'RGB')
             label = Image.fromarray(label)
+
             if self.data_transform is not None:
                 img, label = self.data_transform((img, label))
+
 
         return img, label, img_path.split('/')[-1]
 
